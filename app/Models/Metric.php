@@ -13,6 +13,7 @@ namespace CachetHQ\Cachet\Models;
 
 use AltThree\Validator\ValidatingTrait;
 use AltThree\Validator\ValidationException;
+use CachetHQ\Cachet\Models\Traits\HasMeta;
 use CachetHQ\Cachet\Models\Traits\SortableTrait;
 use CachetHQ\Cachet\Presenters\MetricPresenter;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,7 +23,9 @@ use McCool\LaravelAutoPresenter\HasPresenter;
 
 class Metric extends Model implements HasPresenter
 {
-    use SortableTrait, ValidatingTrait;
+    use HasMeta,
+        SortableTrait,
+        ValidatingTrait;
 
     /**
      * The calculation type of sum.
@@ -166,23 +169,13 @@ class Metric extends Model implements HasPresenter
     }
 
     /**
-     * Get all of the meta relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
-     */
-    public function meta()
-    {
-        return $this->morphMany(Meta::class, 'meta');
-    }
-
-    /**
      * Get the points relation.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function points()
     {
-        return $this->hasMany(MetricPoint::class, 'metric_id', 'id');
+        return $this->hasMany(MetricPoint::class, 'metric_id', 'id')->latest();
     }
 
     /**
@@ -194,7 +187,7 @@ class Metric extends Model implements HasPresenter
      */
     public function scopeDisplayable(Builder $query)
     {
-        return $query->where('display_chart', '=', true)->where('visible', '!=', self::VISIBLE_HIDDEN);
+        return $query->where('display_chart', '=', true)->where('visible', '<>', self::VISIBLE_HIDDEN);
     }
 
     /**

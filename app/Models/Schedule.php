@@ -12,11 +12,14 @@
 namespace CachetHQ\Cachet\Models;
 
 use AltThree\Validator\ValidatingTrait;
+use CachetHQ\Cachet\Models\Traits\HasMeta;
 use CachetHQ\Cachet\Models\Traits\SearchableTrait;
 use CachetHQ\Cachet\Models\Traits\SortableTrait;
 use CachetHQ\Cachet\Presenters\SchedulePresenter;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use McCool\LaravelAutoPresenter\HasPresenter;
 
 /**
@@ -26,7 +29,11 @@ use McCool\LaravelAutoPresenter\HasPresenter;
  */
 class Schedule extends Model implements HasPresenter
 {
-    use SearchableTrait, SortableTrait, ValidatingTrait;
+    use HasMeta,
+        SearchableTrait,
+        SoftDeletes,
+        SortableTrait,
+        ValidatingTrait;
 
     /**
      * The upcoming status.
@@ -142,13 +149,17 @@ class Schedule extends Model implements HasPresenter
     }
 
     /**
-     * Get all of the meta relation.
+     * Scope schedules that are in progress.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function meta()
+    public function scopeInProgress(Builder $query)
     {
-        return $this->morphMany(Meta::class, 'meta');
+        return $query->where('scheduled_at', '<=', Carbon::now())->where('status', '<>', self::COMPLETE)->where(function ($query) {
+            $query->whereNull('completed_at')->orWhere('completed_at', '>', Carbon::now());
+        });
     }
 
     /**

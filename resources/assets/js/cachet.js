@@ -133,52 +133,6 @@ $(function () {
         }
     });
 
-    // Date picker.
-    $('input[rel=datepicker]').datetimepicker({
-        format: "DD/MM/YYYY HH:mm",
-        minDate: new Date(), // Don't allow dates before today.
-        sideBySide: true,
-        icons: {
-            time: 'ion-clock',
-            date: 'ion-android-calendar',
-            up: 'ion-ios-arrow-up',
-            down: 'ion-ios-arrow-down',
-            previous: 'ion-ios-arrow-left',
-            next: 'ion-ios-arrow-right',
-            today: 'ion-android-home',
-            clear: 'ion-trash-a',
-        }
-    });
-
-    $('input[rel=datepicker-any]').datetimepicker({
-        format: "DD/MM/YYYY HH:mm",
-        sideBySide: true,
-        icons: {
-            time: 'ion-clock',
-            date: 'ion-android-calendar',
-            up: 'ion-ios-arrow-up',
-            down: 'ion-ios-arrow-down',
-            previous: 'ion-ios-arrow-left',
-            next: 'ion-ios-arrow-right',
-            today: 'ion-android-home',
-            clear: 'ion-trash-a',
-        }
-    });
-
-    $('input[rel=datepicker-custom]').datetimepicker({
-        sideBySide: true,
-        icons: {
-            time: 'ion-clock',
-            date: 'ion-android-calendar',
-            up: 'ion-ios-arrow-up',
-            down: 'ion-ios-arrow-down',
-            previous: 'ion-ios-arrow-left',
-            next: 'ion-ios-arrow-right',
-            today: 'ion-android-home',
-            clear: 'ion-trash-a',
-        }
-    });
-
     // Sortable models.
     var orderableLists = document.querySelectorAll('[data-orderable-list]');
 
@@ -262,7 +216,9 @@ $(function () {
         $('input[name=remove_banner]').val('1');
     });
 
-    $('.group-name').on('click', function () {
+    $('.group-name').on('click', function (event) {
+        event.stopPropagation();
+
         var $this = $(this);
 
         $this.find('.group-toggle').toggleClass('ion-ios-minus-outline').toggleClass('ion-ios-plus-outline');
@@ -270,20 +226,16 @@ $(function () {
         $this.next('.group-items').toggleClass('hide');
     });
 
-    $('.select-group').on('click', function () {
+    $('.select-group').on('click', function (event) {
         var $parentGroup = $(this).closest('ul.list-group');
         $parentGroup.find('input[type=checkbox]').prop('checked', true);
-        $parentGroup.find('.group-items').removeClass('hide')
-        $parentGroup.find('.group-toggle').addClass('ion-ios-minus-outline').removeClass('ion-ios-plus-outline');
         event.stopPropagation();
         return false;
     });
 
-    $('.deselect-group').on('click', function () {
+    $('.deselect-group').on('click', function (event) {
         var $parentGroup = $(this).closest('ul.list-group');
         $parentGroup.find('input[type=checkbox]').prop('checked', false);
-        $parentGroup.find('.group-items').addClass('hide');
-        $parentGroup.find('.group-toggle').removeClass('ion-ios-minus-outline').addClass('ion-ios-plus-outline');
         event.stopPropagation();
         return false;
     });
@@ -354,7 +306,7 @@ $(function () {
             });
         };
 
-        sparkLine(false);
+        sparkLine();
     }
 
     function goToStep(current, next) {
@@ -372,9 +324,6 @@ $(function () {
             .filter(":lt(" + (next) + ")")
             .addClass("active");
     }
-
-    // Password strength
-    $('.password-strength').strengthify();
 
     // Check for updates.
     if ($('#update-alert').length > 0) {

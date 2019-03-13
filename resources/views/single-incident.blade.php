@@ -1,6 +1,8 @@
 @extends('layout.master')
 
-@section('title', $incident->name.' | '.$site_title)
+@section('title', array_get($incident->meta, 'seo.title', $incident->name).' | '.$siteTitle)
+
+@section('description', array_get($incident->meta, 'seo.description', trans('cachet.meta.description.incident', ['name' => $incident->name, 'date' => $incident->occurred_at_formatted])))
 
 @section('bodyClass', 'no-padding')
 
@@ -31,6 +33,11 @@
                 <div class="col-xs-10 col-xs-offset-2 col-sm-11 col-sm-offset-0">
                     <div class="panel panel-message incident">
                         <div class="panel-body">
+                            @if($currentUser)
+                            <div class="pull-right btn-group">
+                                <a href="{{ cachet_route('dashboard.incidents.updates.edit', ['incident' => $incident, 'incident_update' => $update]) }}" class="btn btn-default">{{ trans('forms.edit') }}</a>
+                            </div>
+                            @endif
                             <div class="markdown-body">
                                 {!! $update->formatted_message !!}
                             </div>
